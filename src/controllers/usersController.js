@@ -7,17 +7,17 @@ const {
   deleteUserById,
 } = require("../services/usersService.js");
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await getUsers();
 
     res.status(statusCode.OK).send(users);
   } catch (err) {
-    throw err;
+    next(err)
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const userInfo = req.body;
     const newUser = await addUser(userInfo);
@@ -27,13 +27,14 @@ const createUser = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userById = await getUserById(id);
 
     if (!userById) {
-      res.status(statusCode.NOT_FOUND).send({
+      return next({
+        status: statusCode.NOT_FOUND,
         message: `Not found user with id ${id}`,
       });
     }
@@ -50,9 +51,10 @@ const updateUser = async (req, res) => {
     const user = await getUserById(id);
 
     if (!user) {
-      res
-        .status(statusCode.BAD_REQUEST)
-        .send({ message: `Not found with id ${id}` });
+      return next({
+        status: statusCode.NOT_FOUND,
+        message: `Not found user with id ${id}`,
+      });
     }
 
     const updatedUser = await updateUserById(id, req.body);
@@ -69,9 +71,10 @@ const deleteUser = async (req, res) => {
     const deletedUser = await deleteUserById(id);
 
     if (!deletedUser) {
-      res
-        .status(statusCode.NOT_FOUND)
-        .send({ message: `Not found with id ${id}` });
+      return next({
+        status: statusCode.NOT_FOUND,
+        message: `Not found user with id ${id}`,
+      }); 
     }
 
     res.status(statusCode.NO_CONTENT).send("Deleted successfully");
