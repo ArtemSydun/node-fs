@@ -23,7 +23,7 @@ const createUser = async (req, res, next) => {
     const newUser = await addUser(userInfo);
     res.status(statusCode.CREATED).json(newUser);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
@@ -41,11 +41,11 @@ const getUser = async (req, res, next) => {
 
     res.status(statusCode.OK).send(userById);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await getUserById(id);
@@ -60,11 +60,11 @@ const updateUser = async (req, res) => {
     const updatedUser = await updateUserById(id, req.body);
     res.status(statusCode.OK).json(updatedUser);
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -79,7 +79,7 @@ const deleteUser = async (req, res) => {
 
     res.status(statusCode.NO_CONTENT).send("Deleted successfully");
   } catch (err) {
-    throw err;
+    next(err);
   }
 };
 

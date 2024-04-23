@@ -37,7 +37,6 @@ const schemaUpdateUser = Joi.object({
 
 
 const validateCreateUser = (req, res, next) => {
-  console.log('USER CREATION WAS VALIDATED');
   return validate(schemaCreateUser, req.body, next);
 };
 
