@@ -1,12 +1,18 @@
 const express = require('express');
 const app = express();
 
+
+require('dotenv').config();
+
 const userRouter = require('../routers/usersRouter');
+const moviesRouter = require('../routers/moviesRouter');
 const { statusCode } = require('../helpers/constants');
 
 app.use(express.json());
 
 app.use('/users', userRouter)
+
+app.use('/movies', moviesRouter);
 
 app.use((_, res) => {
   res.status(statusCode.NOT_FOUND).json({

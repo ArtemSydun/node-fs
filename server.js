@@ -1,10 +1,24 @@
 const app = require('./src/app/index.js');
 
-const PORT = 3005;
+const { connectDb } = require('./src/db/connection');
 
-app.listen(PORT, (err) => {
-  if (err) { 
-    console.log('Error at server launch', err)
+const PORT = process.env.PORT;
+
+const startServer = async () => {
+  try {
+    await connectDb();
+    app.listen(PORT, (err) => {
+      if (err) {
+        console.log('Error at server launch', err)
+      }
+      console.log(`Server running on port ${PORT}`);
+    })
   }
-  console.log(`Server running on port http://localhost:${PORT}`);
-});
+  catch (error) { 
+    console.log(error);
+  }
+}
+
+
+
+startServer();
