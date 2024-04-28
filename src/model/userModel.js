@@ -8,10 +8,11 @@ const UserSchema = new Schema({
     },
     phone: {
         type: String,
-        required: true
+        required: true,
+        match: [/^380\d{7}$/, 'Please enter a valid phone number starting with 380']
     },
     email: {
-        type: String,
+        type: String, 
         required: true,
         unique: true,
     },

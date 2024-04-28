@@ -15,7 +15,7 @@ const MovieSchema = new Schema({
         required: true,
     },
     rating: {
-        type: Number,
+        type: mongoose.Decimal128,
         required: true
     },
     views: {

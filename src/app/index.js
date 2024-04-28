@@ -25,10 +25,10 @@ app.use((_, res) => {
 app.use((err, _, res, next) => {
   err.status = err.status ? err.status : statusCode.INTERNAL_SERVER_ERROR;
   res.status(err.status).json({
-    status: err.status === 500 ? 'fail' : 'error',
+    status: err.status === statusCode.INTERNAL_SERVER_ERROR ? 'fail' : 'error',
     code: err.status,
     message: err.message,
-    data: err.status === 500 ? 'Internal Server Error' : err.data,
+    data: err.status === statusCode.INTERNAL_SERVER_ERROR ? 'Internal Server Error' : err.data,
   });
 });
 

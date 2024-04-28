@@ -21,7 +21,7 @@ const validate = (schema, body, next) => {
 
 const schemaCreateUser = Joi.object({
   name: Joi.string().alphanum().min(3).max(30).required(),
-  phone: Joi.string().alphanum().min(7).max(12).required(),
+  phone: Joi.string().alphanum().required(),
   email: Joi.string()
   .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
   age: Joi.number().min(18).required(),
