@@ -2,14 +2,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { User } = require("../model/userModel.js");
-const { BadRequestException } = require("../helpers/exceptions.js");
-const { Movie } = require("../model/movieModel.js");
+const { BadRequestException, ConflictException } = require("../helpers/exceptions.js");
 const { getMovieById } = require("./moviesService.js");
 
 const registerUser = async ({ firstName, lastName, email, password }) => {
   const existedUser = User.findOne({ email });
   if (existedUser.email) {
-    throw new Error("User with such email already exists");
+    throw new ConflictException("User with such email already exists");
   }
 
   const newUser = new User();
@@ -55,9 +54,7 @@ const getUserInfo = async (email) => {
 
 const addToFavorites = async (email, movieId) => {
   const user = await User.findOne({ email });
-  const movieToAdd = await getMovieById(movieId);
-  console.log(movieToAdd);
-
+  
   await User.updateOne(
     { _id: user.id },
     { $push: { favoriteMovies: movieId } }
@@ -79,7 +76,7 @@ const clearFavorites = async (email) => {
   await User.updateOne(
     { _id: user.id },
     { $set: { favoriteMovies: [] } }
-  );
+  );  
 
   return user.favoriteMovies;
 };
