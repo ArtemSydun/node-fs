@@ -1,29 +1,42 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-    name: {
+    firstName: {
         type: String,
         required: true
     },
-    phone: {
+    lastName: {
         type: String,
-        required: true,
-        match: [/^380\d{7}$/, 'Please enter a valid phone number starting with 380']
+        required: true
     },
     email: {
         type: String, 
         required: true,
         unique: true,
     },
-    age: {
-        type: Number,
-        required: true
+    password: {
+        type: String,
+        required: true,
+        min: 6,
     },
-}, { timestamps: true })
+    favoriteMovies: [{type:
+      mongoose.Schema.Types.ObjectId, ref: "Movie"}]
+}, {
+  versionKey: false,
+  timestamps: true, 
+})
+
+UserSchema.pre('save', async function () {
+  if (this.$isNew) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+});
 
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('user', UserSchema);
 
 
 module.exports = { User }

@@ -4,13 +4,13 @@ const app = express();
 
 require('dotenv').config();
 
-const userRouter = require('../routers/usersRouter');
+const authRouter = require('../routers/authRouter');
 const moviesRouter = require('../routers/moviesRouter');
 const { statusCode } = require('../helpers/constants');
 
 app.use(express.json());
 
-app.use('/users', userRouter)
+app.use('/auth', authRouter)
 
 app.use('/movies', moviesRouter);
 
