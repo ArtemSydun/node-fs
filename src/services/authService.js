@@ -53,6 +53,12 @@ const getUserInfo = async (email) => {
 
 const addToFavorites = async (email, movieId) => {
   const user = await User.findOne({ email });
+
+  const isMovieAlreadyAdded = user.favoriteMovies.some(favMovieId => favMovieId.equals(movieId));
+  
+  if (isMovieAlreadyAdded) {
+    throw new ConflictException('Film already in favorites');
+  }
   
   await User.updateOne(
     { _id: user.id },
