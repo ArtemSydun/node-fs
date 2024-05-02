@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const { User } = require("../model/userModel.js");
 const { BadRequestException, ConflictException } = require("../helpers/exceptions.js");
-const { getMovieById } = require("./moviesService.js");
 
 const registerUser = async ({ firstName, lastName, email, password }) => {
   const existedUser = User.findOne({ email });
@@ -60,7 +59,7 @@ const addToFavorites = async (email, movieId) => {
     { $push: { favoriteMovies: movieId } }
   );
 
-  const updatedUser = await User.findById(user._id);
+  const updatedUser = await User.findById(user._id).populate('favoriteMovies');
   return updatedUser.favoriteMovies;
 };
 
