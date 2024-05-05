@@ -21,6 +21,11 @@ const UserSchema = new Schema({
         required: true,
         min: 6,
     },
+    activated: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     favoriteMovies: [{type:
       mongoose.Schema.Types.ObjectId, ref: "Movie"}]
 }, {

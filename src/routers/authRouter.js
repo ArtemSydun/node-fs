@@ -9,16 +9,18 @@ const {
   getUserInfoController,
   addToFavoritesController,
   getUserFavoriteMoviesController,
-  clearUserFavoritesController
+  clearUserFavoritesController,
+  verifyUserController
 } = require("../controllers/authController.js");
 
 const {
   validateCreateUser,
-  validateCredentialsUser
+  validateCredentialsUser,
 } = require('../middlewares/authValidation.js');
 
 const { authGuard } = require('../middlewares/authGuard.js');
 
+router.get('/verify/:code', asyncWrapper(verifyUserController));
 router.get('/current', authGuard, asyncWrapper(getUserInfoController))
 router.get('/favorites', authGuard, asyncWrapper(getUserFavoriteMoviesController))
 router.post('/addToFavorites', authGuard, asyncWrapper(addToFavoritesController))
