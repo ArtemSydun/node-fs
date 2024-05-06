@@ -2,6 +2,7 @@ const { User } = require("../model/userModel.js");
 const {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
 } = require("../helpers/exceptions.js");
 const { createVerificationCode } = require("./verificationService.js");
 const { sendVerificationEmail } = require("./mailingService.js");
@@ -9,6 +10,7 @@ const { Verification } = require("../model/verificationModel.js");
 const {
   generateToken,
   compareUserPassword,
+  generateRandomPassword,
 } = require("../helpers/authFunctions.js");
 
 const registerUser = async ({ firstName, lastName, email, password }) => {
@@ -34,6 +36,11 @@ const registerUser = async ({ firstName, lastName, email, password }) => {
 
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email }).exec();
+  
+  if (!user.activated) {
+    throw new ForbiddenException('Please verify your email first')
+  }
+
   await compareUserPassword(user, password);
   return generateToken(user.id, user.email);
 };
@@ -80,9 +87,29 @@ const verifyUserAgain = async (email) => {
   await sendVerificationEmail(email, verificationCode.code);
 };
 
+const resetUserPassword = async (email) => {
+  const userToReset = await User.findOne({ email }).exec();
+
+  if (!userToReset) {
+    throw new BadRequestException('User doesn`t exist');
+  }
+
+  if (!userToReset.activated) {
+    throw new ForbiddenException('Please verify your email first')
+  }
+
+  const newPassword = generateRandomPassword();
+  userToReset.password = newPassword;
+
+  await userToReset.save();
+
+  return newPassword;
+}
+
 module.exports = {
   registerUser,
   loginUser,
   verifyUser,
   verifyUserAgain,
+  resetUserPassword,
 };

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { BadRequestException } = require('./exceptions');
 
 const generateToken = (userId, userEmail) => { 
@@ -13,10 +14,14 @@ const generateToken = (userId, userEmail) => {
 }
 
 const compareUserPassword = async (user, password) => { 
-  const isPasswordValid = bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!user || !isPasswordValid) {
     throw new BadRequestException('Invalid credentials');
   }
 }
 
-module.exports = { generateToken, compareUserPassword }
+const generateRandomPassword = () => {
+  return crypto.randomBytes(4).toString('hex');
+};
+
+module.exports = { generateToken, compareUserPassword, generateRandomPassword }

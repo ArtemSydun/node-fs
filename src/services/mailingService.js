@@ -49,4 +49,21 @@ const sendVerificationEmail = async (email, code) => {
   }
 };
 
-module.exports = { sendVerificationEmail };
+const sendForgotPassword = async (email, password) => {
+  try {
+    const html = `Your new password: ${password}`;
+
+    await send({
+      from: SENDER,
+      to: email,
+      text: "Your new password",
+      subject: "Password reset",
+      html,
+    });
+  } catch (error) {
+    console.log(error);
+    throw new ServiceUnavailableException(error?.response?.body);
+  }
+};
+
+module.exports = { sendVerificationEmail, sendForgotPassword };

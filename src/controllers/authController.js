@@ -5,7 +5,9 @@ const {
   loginUser,
   verifyUser,
   verifyUserAgain,
+  resetUserPassword,
 } = require("../services/authService.js");
+const { sendForgotPassword } = require('../services/mailingService.js');
 
 const registerUserController = async (req, res) => {
   const userInfo = req.body;
@@ -32,14 +34,16 @@ const resendUserVerification = async (req, res) => {
 
 const forgotPasswordController = async (req, res) => {
   const { email } = req.body;
-  sendForgotPassword(email);
-  res.status(statusCode.OK).json({ status: "success" });
+  const newPassword = await resetUserPassword(email);
+  await sendForgotPassword(email, newPassword);
+
+  res.status(statusCode.OK).json({ status: "New password sent to your email" });
 };
 
 const loginUserController = async (req, res) => {
   const body = req.body;
   const token = await loginUser(body);
-  res.status(statusCode.OK).json({ status: "success", token });
+  res.status(statusCode.OK).json({ status: "Successful login", token });
 };
 
 

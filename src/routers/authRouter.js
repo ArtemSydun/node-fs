@@ -7,7 +7,8 @@ const {
   registerUserController,
   loginUserController,
   verifyUserController,
-  resendUserVerification
+  resendUserVerification,
+  forgotPasswordController
 } = require("../controllers/authController.js");
 
 const {
@@ -23,5 +24,7 @@ router.get('/verify/:code', asyncWrapper(verifyUserController));
 router.post('/signUp', validateCreateUser, asyncWrapper(registerUserController));
 
 router.post('/signIn', validateCredentialsUser, asyncWrapper(loginUserController));
+
+router.post('/resetPassword', asyncWrapper(forgotPasswordController));
 
 module.exports = router;
