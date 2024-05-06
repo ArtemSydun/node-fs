@@ -1,4 +1,3 @@
-const Mailgen = require("mailgen");
 const nodemailer = require("nodemailer");
 const { ServiceUnavailableException } = require("../helpers/exceptions");
 
@@ -26,9 +25,6 @@ const send = async (config) => {
       text,
       html,
     });
-    console.log('start');
-    console.log(info);
-    console.log('end');
   } catch (error) {
     console.error(error.message);
     throw new ServiceUnavailableException(error.message);
@@ -39,7 +35,7 @@ const sendVerificationEmail = async (email, code) => {
   try {
     const verificationLink = `http://localhost:${PORT}/auth/verify/${code}`;
     const html = `<p>To verify your email please click on <a href="${verificationLink}">link</a></p>`;
-    console.log(email);
+
     await send({
       from: SENDER,
       to: email,

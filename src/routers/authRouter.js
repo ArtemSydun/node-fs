@@ -6,7 +6,8 @@ const router = express.Router();
 const {
   registerUserController,
   loginUserController,
-  verifyUserController
+  verifyUserController,
+  resendUserVerification
 } = require("../controllers/authController.js");
 
 const {
@@ -15,8 +16,12 @@ const {
 } = require('../middlewares/authValidation.js');
 
 
+router.post('/verify', asyncWrapper(resendUserVerification));
+
 router.get('/verify/:code', asyncWrapper(verifyUserController));
+
 router.post('/signUp', validateCreateUser, asyncWrapper(registerUserController));
+
 router.post('/signIn', validateCredentialsUser, asyncWrapper(loginUserController));
 
 module.exports = router;

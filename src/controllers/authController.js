@@ -4,6 +4,7 @@ const {
   registerUser,
   loginUser,
   verifyUser,
+  verifyUserAgain,
 } = require("../services/authService.js");
 
 const registerUserController = async (req, res) => {
@@ -14,9 +15,19 @@ const registerUserController = async (req, res) => {
 
 const verifyUserController = async (req, res) => {
   const code = req.params.code;
-  console.log(req.params);
   const token = await verifyUser(code);
   res.status(statusCode.CREATED).json({ status: "success", token });
+};
+
+const resendUserVerification = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    res.status(statusCode.BAD_REQUEST).json({ message: "missing required field 'email' "})
+  }
+
+  await verifyUserAgain(email);
+  res.status(statusCode.CREATED).json({ status: "Verification link send again" });
 };
 
 const forgotPasswordController = async (req, res) => {
@@ -37,5 +48,6 @@ module.exports = {
   registerUserController,
   loginUserController,
   verifyUserController,
+  resendUserVerification,
   forgotPasswordController,
 };

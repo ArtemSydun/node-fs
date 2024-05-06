@@ -17,6 +17,7 @@ const createVerificationCode = async (userId) => {
     active: true,
     userId,
   });
+
   return newVerificationCode;
 };
 

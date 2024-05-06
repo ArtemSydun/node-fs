@@ -1,14 +1,15 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
 const { User } = require("../model/userModel.js");
 const {
   BadRequestException,
   ConflictException,
 } = require("../helpers/exceptions.js");
-const { createVerificationCode } = require('./verificationService.js');
-const { sendVerificationEmail } = require('./mailingService.js');
-const { Verification } = require('../model/verificationModel.js');
+const { createVerificationCode } = require("./verificationService.js");
+const { sendVerificationEmail } = require("./mailingService.js");
+const { Verification } = require("../model/verificationModel.js");
+const {
+  generateToken,
+  compareUserPassword,
+} = require("../helpers/authFunctions.js");
 
 const registerUser = async ({ firstName, lastName, email, password }) => {
   const existedUser = User.findOne({ email });
@@ -26,58 +27,62 @@ const registerUser = async ({ firstName, lastName, email, password }) => {
     password,
   });
 
-  console.log(email);
-  await sendVerificationEmail(email, newVerificationCode);
+  await sendVerificationEmail(email, newVerificationCode.code);
   await newVerificationCode.save();
   await newUser.save();
 };
 
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email }).exec();
-
-  const isPasswordCorrect = bcrypt.compare(password, user.password);
-
-  if (!user || !isPasswordCorrect) {
-    throw new BadRequestException("invalid credits");
-  }
-
-  const jwtPayload = {
-    email: user.email,
-    id: user.id,
-  };
-
-  const JWT_SECRET = process.env.JWT_SECRET;
-  const JWT_EXPIRATION_TIME = process.env.JWT_EXPIRATION_TIME;
-
-  const token = jwt.sign(jwtPayload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRATION_TIME,
-  });
-
-  return token;
+  await compareUserPassword(user, password);
+  return generateToken(user.id, user.email);
 };
 
-const verifyUser = async (code) => { 
-  const verificationCode = await Verification.findOne(code);
+const verifyUser = async (code) => {
+  const verificationCode = await Verification.findOne({ code, active: true });
 
-  if (!verificationCode) { 
-    throw new BadRequestException('Invalid verification code');
+  if (!verificationCode) {
+    throw new BadRequestException("Invalid verification code");
   }
-  
+
   const userToVerify = await User.findById(verificationCode.userId);
 
-  if (!userToVerify) { 
-    throw new BadRequestException('Invalid verification code');
+  if (!userToVerify) {
+    throw new BadRequestException("User to verify doesn`t exist");
   }
 
-
-  await userToVerify.updateOne({ confirmed: true });
+  await userToVerify.updateOne({ activated: true });
   await verificationCode.deleteOne();
-  return generateToken(userToVerify.id, userToVerify.email);
 
-}
+  return generateToken(userToVerify.id, userToVerify.email);
+};
+
+const verifyUserAgain = async (email) => {
+  const userToVerify = await User.findOne({ email });
+
+  if (!userToVerify) {
+    throw new ConflictException("User to verify doesn't exist");
+  }
+
+  if (userToVerify.activated) {
+    throw new ConflictException("User is already verified");
+  }
+
+  let verificationCode = await Verification.findOne({
+    userId: userToVerify._id,
+  });
+
+  if (!verificationCode) {
+    verificationCode = await createVerificationCode(userToVerify._id);
+    await verificationCode.save();
+  }
+
+  await sendVerificationEmail(email, verificationCode.code);
+};
 
 module.exports = {
   registerUser,
   loginUser,
   verifyUser,
+  verifyUserAgain,
 };
