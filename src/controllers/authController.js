@@ -5,7 +5,8 @@ const {
   loginUser,
   verifyUser,
   verifyUserAgain,
-  resetUserPassword,
+  forgotUserPassword,
+  changeUserPassword,
 } = require("../services/authService.js");
 const { sendForgotPassword } = require('../services/mailingService.js');
 
@@ -34,10 +35,18 @@ const resendUserVerification = async (req, res) => {
 
 const forgotPasswordController = async (req, res) => {
   const { email } = req.body;
-  const newPassword = await resetUserPassword(email);
+  const newPassword = await forgotUserPassword(email);
   await sendForgotPassword(email, newPassword);
 
   res.status(statusCode.OK).json({ status: "New password sent to your email" });
+};
+
+const changePasswordController = async (req, res) => {
+  const { oldPassword, newPassword, email } = req.body;
+
+  await changeUserPassword({ oldPassword, newPassword, email });
+
+  res.status(statusCode.OK).json({ status: "New password is saved" });
 };
 
 const loginUserController = async (req, res) => {
@@ -54,4 +63,5 @@ module.exports = {
   verifyUserController,
   resendUserVerification,
   forgotPasswordController,
+  changePasswordController,
 };

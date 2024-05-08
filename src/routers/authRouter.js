@@ -8,7 +8,8 @@ const {
   loginUserController,
   verifyUserController,
   resendUserVerification,
-  forgotPasswordController
+  forgotPasswordController,
+  changePasswordController
 } = require("../controllers/authController.js");
 
 const {
@@ -25,6 +26,8 @@ router.post('/signUp', validateCreateUser, asyncWrapper(registerUserController))
 
 router.post('/signIn', validateCredentialsUser, asyncWrapper(loginUserController));
 
-router.post('/resetPassword', asyncWrapper(forgotPasswordController));
+router.post('/forgotPassword', asyncWrapper(forgotPasswordController));
+
+router.post('/changePassword', asyncWrapper(changePasswordController));
 
 module.exports = router;

@@ -87,7 +87,7 @@ const verifyUserAgain = async (email) => {
   await sendVerificationEmail(email, verificationCode.code);
 };
 
-const resetUserPassword = async (email) => {
+const forgotUserPassword = async (email) => {
   const userToReset = await User.findOne({ email }).exec();
 
   if (!userToReset) {
@@ -106,10 +106,25 @@ const resetUserPassword = async (email) => {
   return newPassword;
 }
 
+const changeUserPassword = async ({ oldPassword, newPassword, email }) => {
+  const userToReset = await User.findOne({ email }).exec();
+
+  if (!userToReset) {
+    throw new BadRequestException('User doesn`t exist');
+  }
+
+  await compareUserPassword(userToReset, oldPassword);
+
+  userToReset.password = newPassword;
+
+  await userToReset.save();
+}
+
 module.exports = {
   registerUser,
   loginUser,
   verifyUser,
   verifyUserAgain,
-  resetUserPassword,
+  forgotUserPassword,
+  changeUserPassword
 };
