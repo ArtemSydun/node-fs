@@ -1,11 +1,15 @@
 const express = require("express");
-const { getAllMovies, getMovie } = require('../controllers/moviesController');
+const { getAllMovies, getMovie, getMovieStats } = require('../controllers/moviesController');
+const { asyncWrapper } = require('../helpers/apiWrapper');
 
 const router = express.Router();
 
 
-router.get("/", getAllMovies);
+router.get("/", asyncWrapper(getAllMovies));
 
-router.get("/:id", getMovie);
+router.get("/aggregation", asyncWrapper(getMovieStats));
+
+router.get("/:id", asyncWrapper(getMovie));
+
 
 module.exports = router;
