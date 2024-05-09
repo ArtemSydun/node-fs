@@ -29,7 +29,6 @@ const getMovieById = async (id) => {
 const getMovieAggregation = async () => {
   const movieStats = await Movie.aggregate([
     { $match: { year: { $gt: 1994 } } },
-  
 
     {
       $group: {
@@ -47,28 +46,21 @@ const getMovieAggregation = async () => {
     },
     {
       $project: {
+        _id: 0,
         genre: "$_id",
         movies: 1,
         totalViews: 1,
-        averageRating: 1,
+        averageRating: {
+          $concat: [
+            { $toString: { $round: [{ $avg: "$averageRating" }, 2] } },
+          ]
+        },
         count: 1
       }
     },
-    {
-      $project: {
-        _id: 0,
-        genre: 1,
-        movies: 1,
-        totalViews: 1,
-        averageRating: {
-          $round: [{ $avg: "$averageRating" }, 2] // Round averageRating to 2 decimal places
-        },
-        count: 1,
-      }
-    }
   ]);
 
-  return movieStats;
+  return { items: movieStats };
 };
 module.exports = {
   getMovies,
