@@ -1,3 +1,5 @@
+const path = require('path');
+
 const statusCode = {
   OK: 200,
   CREATED: 201,
@@ -10,6 +12,21 @@ const statusCode = {
   SERVICE_UNAVAILABLE: 503,
 };
 
+const temporaryAvatarsFolder = path.join(process.cwd(), process.env.UPLOAD_DIR);
+
+
+const finalAvatarsFolder = path.join(
+  process.cwd(),
+  'public',
+  process.env.AVATARS_FOLDER
+);
+
+const MAX_AVATAR_SIZE = 5000000;
+
+
 module.exports = {
   statusCode,
+  temporaryAvatarsFolder,
+  finalAvatarsFolder,
+  MAX_AVATAR_SIZE,
 };

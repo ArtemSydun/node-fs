@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-
+const path = require('path')
+const morgan = require('morgan')
 
 require('dotenv').config();
 
@@ -9,7 +10,13 @@ const userRouter = require('../routers/userRouter')
 const moviesRouter = require('../routers/moviesRouter');
 const { statusCode } = require('../helpers/constants');
 
+const staticFilesDirectoryPath = path.join(__dirname, '../../public');
+
+
 app.use(express.json());
+app.use(morgan('tiny'));
+
+app.use(express.static(staticFilesDirectoryPath));
 
 app.use('/auth', authRouter)
 
