@@ -1,8 +1,9 @@
-const express = require('express');
-const app = express();
+import express, { Express } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { statusCode } from '../helpers/constants';
+import userRouter from '../routers/usersRouter';
 
-const userRouter = require('../routers/usersRouter');
-const { statusCode } = require('../helpers/constants');
+export const app: Express = express();
 
 app.use(express.json());
 
@@ -16,7 +17,7 @@ app.use((_, res) => {
   });
 });
 
-app.use((err, _, res, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   err.status = err.status ? err.status : statusCode.INTERNAL_SERVER_ERROR;
   res.status(err.status).json({
     status: err.status === 500 ? 'fail' : 'error',
@@ -26,5 +27,4 @@ app.use((err, _, res, next) => {
   });
 });
 
-
-module.exports = app
+export default app;

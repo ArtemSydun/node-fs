@@ -1,6 +1,7 @@
-const { v4: uuidv4 } = require("uuid");
-const fs = require("fs/promises");
-const path = require("path");
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs/promises";
+import path from "path";
+import { User } from '../types/User';
 
 const users = path.join(__dirname, "../model/users.json");
 
@@ -14,7 +15,7 @@ const getUsers = async () => {
   }
 };
 
-const addUser = async (userInfo) => {
+const addUser = async (userInfo: User) => {
   try {
     const newUser = {
       id: uuidv4(),
@@ -31,10 +32,10 @@ const addUser = async (userInfo) => {
   }
 };
 
-const getUserById = async (id) => {
+const getUserById = async (id: string) => {
   try {
     const usersList = await getUsers();
-    const userById = usersList.find((user) => user.id == id);
+    const userById = usersList.find((user: User) => user.id == id);
 
     return userById;
   } catch (err) {
@@ -42,12 +43,12 @@ const getUserById = async (id) => {
   }
 };
 
-const updateUserById = async (id, body) => {
+const updateUserById = async (id: string, body: User) => {
   try {
     const userToUpdate = await getUserById(id);
     const usersList = await getUsers();
     const updatedUser = { ...userToUpdate, ...body };
-    const updatedUsersList = usersList.map((user) =>
+    const updatedUsersList = usersList.map((user: User) =>
       user.id == id ? updatedUser : user
     );
     await fs.writeFile(users, JSON.stringify(updatedUsersList), "utf8");
@@ -57,11 +58,11 @@ const updateUserById = async (id, body) => {
   }
 };
 
-const deleteUserById = async (id) => {
+const deleteUserById = async (id: string) => {
   try {
     const userToDelete = await getUserById(id);
     const usersList = await getUsers();
-    const updatedUsersList = usersList.filter((user) => user.id !== id);
+    const updatedUsersList = usersList.filter((user: User) => user.id !== id);
 
     await fs.writeFile(users, JSON.stringify(updatedUsersList), "utf8");
 
@@ -71,7 +72,7 @@ const deleteUserById = async (id) => {
   }
 };
 
-module.exports = {
+export const userService = {
   getUsers,
   addUser,
   getUserById,
