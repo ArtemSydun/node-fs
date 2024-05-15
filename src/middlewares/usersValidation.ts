@@ -1,13 +1,16 @@
+import { Request, Response, NextFunction } from 'express';
+
 const Joi = require('joi');
 const { statusCode } = require('../helpers/constants');
 
-const validate = (schema, body, next) => {
+const validate = (schema: any, body: any, next: NextFunction) => {
   if (Object.keys(body).length === 0) {
     return next({
       status: statusCode.BAD_REQUEST,
       message: 'missing fields',
     });
   }
+
   const { error } = schema.validate(body);
   if (error) {
     const [{ message }] = error.details;
@@ -36,11 +39,11 @@ const schemaUpdateUser = Joi.object({
 });
 
 
-const validateCreateUser = (req, res, next) => {
+const validateCreateUser = (req: Request, res: Response, next: NextFunction) => {
   return validate(schemaCreateUser, req.body, next);
 };
 
-const validateUpdateUser = (req, res, next) => {
+const validateUpdateUser = (req: Request, res: Response, next: NextFunction) => {
   return validate(schemaUpdateUser, req.body, next);
 };
 
