@@ -5,6 +5,7 @@ const {
   addToFavorites,
   getAllFavorites,
   clearFavorites,
+  updateAvatar,
 } = require("../services/userService.js");
 
 const getUserInfoController = async (req, res) => {
@@ -36,9 +37,17 @@ const clearUserFavoritesController = async (req, res) => {
   res.status(statusCode.OK).send({ message: "success" });
 };
 
+const updateUserAvatarController = async (req, res) => {
+  const id = req.user._id;
+  const avatarURL = await updateAvatar(id, req.file);
+
+  res.json({ avatarURL });
+};
+
 module.exports = {
   getUserInfoController,
   addToFavoritesController,
   getUserFavoriteMoviesController,
   clearUserFavoritesController,
+  updateUserAvatarController,
 };
